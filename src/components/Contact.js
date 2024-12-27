@@ -1,100 +1,54 @@
-import React, { useState } from "react";
-import emailjs from "emailjs-com"; // Import EmailJS
-import { FaWhatsapp, FaInstagram, FaFacebook, FaEnvelope } from "react-icons/fa"; // Importing icons
+import React from "react";
+
 import "./Contact.css"; // Import custom CSS
 
-function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+const Contact = () => {
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    // enter your own web3 forms access key below
+    formData.append("access_key", "4f41f715-4574-4364-be74-321a7a39b1a7");
 
-    // Send the form data using EmailJS
-    emailjs
-      .sendForm("service_1r020ru", "template_4kfd6w9", e.target, "s3npNXP8HosiLgTq8")
-      .then(
-        (result) => {
-          alert("Message Sent Successfully!");
-          console.log(result.text);
-        },
-        (error) => {
-          alert("Message Sending Failed!");
-          console.log(error.text);
-        }
-      );
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: json
+    }).then((res) => res.json());
+
+    alert(res.message);
   };
 
   return (
-    <div className="contact">
-      <h2>Contact Us</h2>
-      <form className="contact-form" onSubmit={handleSubmit}>
-        <label>Name:</label>
-        <input
-          type="text"
-          name="name"
-          placeholder="Enter your name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-
-        <label>Message:</label>
-        <textarea
-          name="message"
-          placeholder="Write your message"
-          value={formData.message}
-          onChange={handleChange}
-        ></textarea>
-
-        <button type="submit">Submit</button>
-      </form>
-
-      <div className="social-media">
-        <h3>Follow Us</h3>
-        <div className="icons">
-          <a href="https://wa.me" target="_blank" rel="noopener noreferrer">
-            <FaWhatsapp className="icon whatsapp" />
-          </a>
-          <a
-            href="https://www.instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaInstagram className="icon instagram" />
-          </a>
-          <a
-            href="https://www.facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaFacebook className="icon facebook" />
-          </a>
-          <a href="mailto:hernurtureai7@gmail.com" target="_blank" rel="noopener noreferrer">
-            <FaEnvelope className="icon gmail" />
-          </a>
+    <div id="contact" className="contact">
+      <div className="title-box">
+        <h1>Get in touch</h1>
+      </div>
+      <div className="contact-section">
+        <div className="contact-left">
+          <h1>Let's talk</h1>
+          <p>Your suggestions help us make Her Nurture AI even better. Share your ideas to enhance the experience of our game, making it more engaging and insightful for users.</p>
+          
         </div>
+        <form onSubmit={onSubmit} className="contact-right">
+          <label htmlFor="">Your Name</label>
+          <input type="text" placeholder="Enter your name" name="name" />
+          <label htmlFor="">Your Email</label>
+          <input type="email" placeholder="Enter your email" name="email" />
+          <label htmlFor="">Write your message here</label>
+          <textarea name="message" rows="8" placeholder="Enter your suggestions"></textarea>
+          <button type="submit" className="contact-submit">Submit now</button>
+        </form>
       </div>
     </div>
   );
-}
+};
 
 export default Contact;
