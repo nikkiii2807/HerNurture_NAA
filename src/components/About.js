@@ -1,13 +1,22 @@
 import React from "react";
+import about from "../assets/about.avif";
+import "./About.css";
 
 function About() {
   return (
     <div className="about">
-      <h2>About Us</h2>
-      <p>
-        HerHealth AI is dedicated to addressing healthcare challenges for women
-        through personalized and AI-powered solutions.
-      </p>
+      <div className="about-content">
+        <div className="text-content">
+          <h2>About Us</h2>
+          <p>
+            HerHealth AI is a dedicated platform that focuses on leveraging AI to enhance women's healthcare access and tackle maternal, reproductive, and mental health challenges. 
+          </p>
+          <p>
+            Our mission is to ensure equitable healthcare solutions for women, promoting gender equity and better health outcomes. By integrating cutting-edge technology with compassion, we aim to make a lasting impact on women's well-being.
+          </p>
+        </div>
+        <img src={about} alt="About HerHealth AI" className="about-image" />
+      </div>
     </div>
   );
 }
