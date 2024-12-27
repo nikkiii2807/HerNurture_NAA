@@ -1,7 +1,8 @@
 import React from "react";
-import logo from '../assets/logo.jpg'; // Adjust the path if necessary
-import './Home.css';
+import Authentication from './Authentication';
+import logo from '../assets/logo.jpg';
 import hero from '../assets/hero.jpg';
+import './Home.css';
 
 function Home() {
   return (
@@ -10,15 +11,12 @@ function Home() {
       <div className="main-content">
         <div className="text-content">
           <h2>Welcome to HerHealth AI</h2>
-          <p>Your personalized platform for women’s healthcare solutions powered by AI.</p>
+          <p>Your personalized platform for women's healthcare solutions powered by AI.</p>
           <img src={logo} alt="Logo" className="logo1" />
         </div>
         <img src={hero} alt="hero" className="hero" />
       </div>
-      <div className="cta-buttons">
-        <button>Get Started</button>
-        <button>Speak to an AI Health Assistant</button>
-      </div>
+      <Authentication />
     </div>
   );
 }
