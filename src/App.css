@@ -7,37 +7,69 @@ body {
 .App-header {
   background-color: #f06292;
   color: white;
-  padding: 10px 20px;
+  padding: 15px 30px; /* Increased padding for taller navbar */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-nav ul {
+.header-left {
   display: flex;
+  align-items: center;
+}
+
+.header-left img {
+  max-height: 60px; /* Slightly larger logo */
+  margin-right: 15px; /* More space between logo and title */
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 26px; /* Slightly larger title */
+}
+
+.nav-links {
   list-style: none;
+  display: flex;
+  gap: 25px; /* Increased spacing between links */
+  margin: 0;
   padding: 0;
 }
 
-nav ul li {
-  margin-right: 20px;
+.nav-links li {
+  position: relative;
 }
 
-nav ul li a {
+.nav-links a {
   color: white;
   text-decoration: none;
+  font-weight: bold;
+  padding: 10px 15px; /* Added padding for a clickable area */
+  border-radius: 8px; /* Slightly rounded corners for hover effect */
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
-.home, .about, .services, .resources, .contact {
+.nav-links a:hover {
+  background-color: #f495ff; /* Light purple hover color */
+  color: white; /* White text on hover */
+  transform: scale(1.1); /* Subtle zoom effect */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Added shadow for hover effect */
+}
+
+.services {
   padding: 20px;
 }
 
-button {
-  margin-right: 10px;
-  padding: 10px 15px;
-  background-color: #f06292;
-  color: white;
-  border: none;
-  cursor: pointer;
+.services ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-button:hover {
-  background-color: #d81b60;
+.services li {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.services li strong {
+  color: #d81b60;
 }
