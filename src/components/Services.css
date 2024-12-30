@@ -1,0 +1,60 @@
+.services {
+    padding: 50px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .services h2 {
+    text-align: center;
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+  }
+  
+  .services-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .service-box {
+    flex: 1 1 calc(25% - 20px);
+    max-width: 300px;
+    padding: 20px;
+    background-color: #CB9DF0;
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    text-decoration: none; /* No underline */
+    height: 250px; /* Increase the height of the service box */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically and horizontally center the text */
+  }
+  
+  .service-box:hover {
+    transform: scale(1.05);
+    background-color: #9e58c4
+  }
+  
+  .service-box h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+     /* Make h3 text white */
+  }
+  
+  .service-description {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #fff;
+  }
+  
+  .active {
+    background-color: #ff4081;
+  }
+  

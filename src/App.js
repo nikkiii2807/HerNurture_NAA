@@ -1,11 +1,15 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import Home from "./components/Home";
 import About from "./components/About";
 import Services from "./components/Services";
-import logo from './assets/logo.jpg'; 
+import ServiceDetail from "./components/ServiceDetail"; // Import ServiceDetail component
 import Contact from "./components/Contact";
+import Footer from "./components/Footer";
+import logo from './assets/logo.jpg'; 
+import "./App.css";
 
 function App() {
   return (
@@ -29,8 +33,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/service/:id" element={<ServiceDetail />} /> {/* Dynamic route for each service */}
           <Route path="/contact" element={<Contact />} />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );

@@ -6,6 +6,10 @@ import './Home.css';
 
 function Home() {
   return (
+   <div id="Home" className="home">
+  {/* Your Home component content */}
+
+
     <div className="home">
       <header className="header"></header>
       <div className="main-content">
@@ -17,7 +21,7 @@ function Home() {
         <img src={hero} alt="hero" className="hero" />
       </div>
       <Authentication />
-    </div>
+    </div></div>
   );
 }
 
