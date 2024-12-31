@@ -14,11 +14,11 @@ function Services() {
     },
     {
       id: 3,
-      title: "Maternal and Reproductive Health Tracker",
+      title: "Menstrual Cycle and Period Tracker",
     },
     {
       id: 4,
-      title: "Gender-Aware Medical Recommendations",
+      title: "Pregnancy Support and Guidance",
     }
   ];
 
