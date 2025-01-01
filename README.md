@@ -1,8 +1,8 @@
-# Hernurture AI - README
+# HerNurture AI - README
 
 ## Overview
 
-Hernurture AI is a comprehensive web application designed to empower individuals with AI-driven tools and support for health and wellness. The platform integrates advanced AI functionalities with an intuitive user interface, providing users with features such as:
+HerNurture AI is a comprehensive web application designed to empower individuals with AI-driven tools and support for health and wellness. The platform integrates advanced AI functionalities with an intuitive user interface, providing users with features such as:
 
 - **AI Assistant Chatbot**: A conversational AI for queries and support.
 - **AI Symptom Checker**: Helps users identify potential health concerns based on their symptoms.
@@ -82,6 +82,7 @@ Follow the steps below to set up Hernurture AI locally:
 ### Other Tools
 
 - **AI Models** for chatbot and symptom analysis.
+- **Gemini API** for enhanced application functionality.
 
 ---
 
@@ -97,7 +98,6 @@ Follow the steps below to set up Hernurture AI locally:
    - Navigate to the Contact Us page to share your suggestions.
 
 ---
-
 
 
 ## License
