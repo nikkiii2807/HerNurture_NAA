@@ -14,7 +14,7 @@ function Home() {
       <header className="header"></header>
       <div className="main-content">
         <div className="text-content">
-          <h2>Welcome to HerHealth AI</h2>
+          <h2>Welcome to HerNurture AI</h2>
           <p>Your personalized platform for women's healthcare solutions powered by AI.</p>
           <img src={logo} alt="Logo" className="logo1" />
         </div>

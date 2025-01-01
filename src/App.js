@@ -18,7 +18,7 @@ function App() {
         <header className="App-header">
           <div className="header-left">
             <img src={logo} alt="Logo" className="logo" />
-            <h1>HerHealth AI</h1>
+            <h1>HerNurture AI</h1>
           </div>
           <nav>
             <ul className="nav-links">
