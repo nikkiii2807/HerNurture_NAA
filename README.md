@@ -1,4 +1,12 @@
+Here is the updated **README** with the requested link included:
+
+---
+
 # HerNurture AI - README
+
+## Project Report
+
+For detailed project information, please refer to the [Project Report](https://docs.google.com/document/d/1Q6WojMP7VkO5jW5TFEVEseRd-ppa8MXOjt1x8eUcLzk/edit?usp=sharing).
 
 ## Overview
 
@@ -99,7 +107,6 @@ Follow the steps below to set up Hernurture AI locally:
 
 ---
 
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
@@ -110,3 +117,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 For any queries or suggestions, feel free to reach out through the Contact Us page on the platform.
 
+---
