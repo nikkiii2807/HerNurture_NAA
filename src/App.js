@@ -8,6 +8,7 @@ import Services from "./components/Services";
 import ServiceDetail from "./components/ServiceDetail"; // Import ServiceDetail component
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import PeriodTracker from "./components/PeriodTracker"; // Import PeriodTracker component
 import logo from './assets/logo.jpg'; 
 import "./App.css";
 
@@ -25,6 +26,7 @@ function App() {
               <li><Link to="/">Home</Link></li>
               <li><Link to="/about">About Us</Link></li>
               <li><Link to="/services">Services</Link></li>
+              <li><Link to="/period-tracker">Period Tracker</Link></li> {/* New link */}
               <li><Link to="/contact">Contact Us</Link></li>
             </ul>
           </nav>
@@ -35,6 +37,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/service/:id" element={<ServiceDetail />} /> {/* Dynamic route for each service */}
           <Route path="/contact" element={<Contact />} />
+          <Route path="/period-tracker" element={<PeriodTracker />} /> {/* New route */}
         </Routes>
         <Footer />
       </div>
