@@ -172,6 +172,25 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+
+app.use(express.json());
+
+// Period data endpoint
+app.post('/get-predictions', async (req, res) => {
+  const { dates } = req.body;
+
+  try {
+    const flaskResponse = await axios.post('http://localhost:5001/predict', {
+      dates,
+    });
+
+    res.json(flaskResponse.data);
+  } catch (error) {
+    console.error('Error calling Flask service:', error);
+    res.status(500).json({ error: 'Failed to fetch predictions from the model.' });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
