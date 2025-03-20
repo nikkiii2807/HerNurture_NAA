@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const app = express();
 const User = require('./models/user');
+const Entry = require('./models/entry'); // Import the Entry model for journaling
 
 // Middleware
 app.use(cors({ origin: 'http://localhost:3000' })); // Ensure your frontend is running on localhost:3000
@@ -26,27 +27,21 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Function to format Gemini response with bold tags
 const formatResponseWithBold = (text) => {
-  // First, handle paired asterisks (for bold text)
   let formattedText = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
-  
-  // Then, remove any remaining single asterisks
   formattedText = formattedText.replace(/\*/g, '');
-  
-  // Clean up any empty bold tags that might have been created
   formattedText = formattedText.replace(/<strong><\/strong>/g, '');
-  
   return formattedText;
 };
 
+// Gemini Chatbot Endpoint
 app.post('/generate-chatbot-response', async (req, res) => {
   const { message } = req.body;
-  
+
   try {
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
-    
-    // Add prompt engineering to discourage use of asterisks for formatting
+
     const enhancedMessage = `${message}\n\nPlease provide a clear response without using asterisks for formatting or bullet points.`;
-    
+
     const geminiApiResponse = await axios({
       url: endpoint,
       method: 'post',
@@ -172,10 +167,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-
-app.use(express.json());
-
-// Period data endpoint
+// Period Prediction Endpoint
 app.post('/get-predictions', async (req, res) => {
   const { dates } = req.body;
 
@@ -188,6 +180,45 @@ app.post('/get-predictions', async (req, res) => {
   } catch (error) {
     console.error('Error calling Flask service:', error);
     res.status(500).json({ error: 'Failed to fetch predictions from the model.' });
+  }
+});
+
+// Journaling Endpoints
+// Save a new journal entry
+app.post('/api/entries', async (req, res) => {
+  try {
+    const { userId, text, deliveryDate } = req.body;
+
+    const newEntry = new Entry({
+      userId,
+      text,
+      date: new Date().toLocaleDateString(),
+      deliveryDate,
+    });
+
+    await newEntry.save();
+
+    res.status(201).json({
+      message: 'Entry saved successfully',
+      entry: newEntry,
+    });
+  } catch (error) {
+    console.error('Error saving journal entry:', error);
+    res.status(500).json({ error: 'Error saving journal entry' });
+  }
+});
+
+// Get all journal entries for a user
+app.get('/api/entries/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const entries = await Entry.find({ userId });
+
+    res.json(entries);
+  } catch (error) {
+    console.error('Error fetching journal entries:', error);
+    res.status(500).json({ error: 'Error fetching journal entries' });
   }
 });
 
