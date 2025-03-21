@@ -1,0 +1,40 @@
+.health-report-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .health-report-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .health-report-container input[type="file"] {
+    margin-bottom: 10px;
+  }
+  
+  .health-report-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .health-report-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .results {
+    margin-top: 20px;
+  }
+  
+  .results pre {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+  }

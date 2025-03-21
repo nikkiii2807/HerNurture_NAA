@@ -1,54 +1,44 @@
 .footer {
-    background-color: #2A004E; /* Dark pink color */
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-  }
-  
-  .footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 0 50px;
-    flex-wrap: wrap;
-  }
-  
-  .footer-left,
-  .footer-center,
-  .footer-right {
-    flex: 1;
-    margin: 10px;
-  }
-  
-  .footer-left h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-  
-  .footer-center ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-center ul li {
-    margin: 5px 0;
-  }
-  
-  .footer-center ul li a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  .footer-center ul li a:hover {
-    text-decoration: underline;
-  }
-  
-  .footer-right p {
-    margin: 5px 0;
-  }
-  
-  .footer-bottom {
-    margin-top: 20px;
-    font-size: 0.9em;
-  }
-  
+  background-color: #2A004E; /* Dark purple color */
+  color: white;
+  padding: 10px 0; /* Reduced padding */
+  text-align: center;
+  font-size: 16px; /* Slightly smaller font */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Center aligns content */
+  padding: 0 30px; /* Reduced side padding */
+  flex-wrap: wrap;
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  flex: 1;
+  margin: 5px; /* Reduced margin */
+}
+
+/* Footer center section */
+.footer-center ul {
+  list-style: none;
+  font-size: 14px; /* Smaller font */
+  padding: 0;
+}
+
+.footer-center ul li {
+  margin: 4px 0; /* Less spacing between items */
+}
+
+/* Footer right section */
+.footer-right p {
+  margin: 3px 0; /* Less margin */
+}
+
+/* Footer bottom */
+.footer-bottom {
+  margin-top: 10px; /* Reduced spacing */
+  font-size: 0.9em;
+}

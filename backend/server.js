@@ -1,224 +1,133 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
-require('dotenv').config();
+const multer = require('multer');
+const { createWorker } = require('tesseract.js');
 
 const app = express();
-const User = require('./models/user');
-const Entry = require('./models/entry'); // Import the Entry model for journaling
+const upload = multer({ dest: 'uploads/' });
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000' })); // Ensure your frontend is running on localhost:3000
-app.use(bodyParser.json()); // For parsing application/json
+app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB database'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Gemini Chatbot API Integration
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-// Function to format Gemini response with bold tags
-const formatResponseWithBold = (text) => {
-  let formattedText = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
-  formattedText = formattedText.replace(/\*/g, '');
-  formattedText = formattedText.replace(/<strong><\/strong>/g, '');
-  return formattedText;
+// Initialize OCR Worker
+const initializeOCR = async () => {
+  const worker = await createWorker();
+  await worker.load();
+  await worker.loadLanguage('eng');
+  await worker.initialize('eng');
+  return worker;
 };
 
-// Gemini Chatbot Endpoint
-app.post('/generate-chatbot-response', async (req, res) => {
-  const { message } = req.body;
+// Function to Analyze Extracted Text
+const analyzeHealthReport = (text) => {
+  const metrics = {};
 
+  // Extract MCH (Mean Corpuscular Hemoglobin)
+  const mchMatch = text.match(/MCH\s*(\d+\.\d+)/i);
+  if (mchMatch) {
+    metrics.mch = parseFloat(mchMatch[1]);
+  }
+
+  // Extract MCHC (Mean Corpuscular Hemoglobin Concentration)
+  const mchcMatch = text.match(/MCHC\s*(\d+\.\d+)/i);
+  if (mchcMatch) {
+    metrics.mchc = parseFloat(mchcMatch[1]);
+  }
+
+  // Extract RDW (Red Cell Distribution Width)
+  const rdwMatch = text.match(/RDW\s*(\d+\.\d+)/i);
+  if (rdwMatch) {
+    metrics.rdw = parseFloat(rdwMatch[1]);
+  }
+
+  // Extract WBC Count (White Blood Cell Count)
+  const wbcMatch = text.match(/Total WBC count\s*(\d+)/i);
+  if (wbcMatch) {
+    metrics.wbc = parseInt(wbcMatch[1]);
+  }
+
+  // Extract Platelet Count
+  const plateletMatch = text.match(/Platelet Count\s*(\d+)/i);
+  if (plateletMatch) {
+    metrics.platelet = parseInt(plateletMatch[1]);
+  }
+
+  return metrics;
+};
+
+// Function to Generate Recommendations
+const generateRecommendations = async (metrics) => {
   try {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+    const prompt = `Based on the following health metrics, provide recommendations: ${JSON.stringify(metrics)}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
-    const enhancedMessage = `${message}\n\nPlease provide a clear response without using asterisks for formatting or bullet points.`;
-
-    const geminiApiResponse = await axios({
-      url: endpoint,
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: {
-        contents: [
-          {
-            parts: [
-              {
-                text: enhancedMessage,
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1000,
+    const response = await axios.post(endpoint, {
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt,
+            },
+          ],
         },
-        safetySettings: [
-          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' }
-        ]
-      }
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 1000,
+      },
     });
 
-    let generatedResponse = geminiApiResponse.data.candidates[0].content.parts[0].text;
-    generatedResponse = formatResponseWithBold(generatedResponse);
-
-    res.json({ content: generatedResponse });
+    return response.data.candidates[0].content.parts[0].text;
   } catch (error) {
-    console.error('Error generating chatbot response:', error.response ? error.response.data : error.message);
-    res.status(500).json({
-      error: 'Error generating chatbot response',
-      message: error.message,
-      details: error.response ? error.response.data : null
-    });
+    console.error('Error generating recommendations:', error);
+    return 'Unable to generate recommendations at this time.';
   }
-});
+};
 
-// Authentication routes
-// Sign Up Route
-app.post('/api/signup', async (req, res) => {
+// Health Report Endpoint
+app.post('/api/upload-health-report', upload.single('image'), async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { path } = req.file;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already registered' });
-    }
+    // Initialize OCR Worker
+    const worker = await initializeOCR();
 
-    // Create new user
-    const user = new User({
-      fullName,
-      email,
-      password
-    });
+    // Perform OCR
+    const { data: { text } } = await worker.recognize(path);
 
-    await user.save();
+    console.log('Extracted Text:', text); // Debug OCR output
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+    // Analyze Extracted Text
+    const healthMetrics = analyzeHealthReport(text);
 
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ error: 'Error creating user' });
-  }
-});
+    console.log('Health Metrics:', healthMetrics); // Debug parsed metrics
 
-// Login Route
-app.post('/api/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Verify password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+    // Generate Recommendations
+    const recommendations = await generateRecommendations(healthMetrics);
 
     res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Error during login' });
-  }
-});
-
-// Period Prediction Endpoint
-app.post('/get-predictions', async (req, res) => {
-  const { dates } = req.body;
-
-  try {
-    const flaskResponse = await axios.post('http://localhost:5001/predict', {
-      dates,
-    });
-
-    res.json(flaskResponse.data);
-  } catch (error) {
-    console.error('Error calling Flask service:', error);
-    res.status(500).json({ error: 'Failed to fetch predictions from the model.' });
-  }
-});
-
-// Journaling Endpoints
-// Save a new journal entry
-app.post('/api/entries', async (req, res) => {
-  try {
-    const { userId, text, deliveryDate } = req.body;
-
-    const newEntry = new Entry({
-      userId,
+      message: 'Health report processed successfully',
       text,
-      date: new Date().toLocaleDateString(),
-      deliveryDate,
+      healthMetrics,
+      recommendations,
     });
 
-    await newEntry.save();
-
-    res.status(201).json({
-      message: 'Entry saved successfully',
-      entry: newEntry,
-    });
+    // Terminate the worker after use
+    await worker.terminate();
   } catch (error) {
-    console.error('Error saving journal entry:', error);
-    res.status(500).json({ error: 'Error saving journal entry' });
-  }
-});
-
-// Get all journal entries for a user
-app.get('/api/entries/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const entries = await Entry.find({ userId });
-
-    res.json(entries);
-  } catch (error) {
-    console.error('Error fetching journal entries:', error);
-    res.status(500).json({ error: 'Error fetching journal entries' });
+    console.error('Error processing health report:', error);
+    res.status(500).json({ error: 'Error processing health report' });
   }
 });
 
